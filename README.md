@@ -1,2 +1,3 @@
 - [ ] Fix masking
 - [ ] Positional encodings
+- [ ] Batching
