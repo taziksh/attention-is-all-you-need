@@ -1,4 +1,5 @@
 - [x] Fix masking
-- [ ] Positional encodings
+- [ ] Fix tokenizer
+- [x] Positional encodings
 - [ ] `assert` every shape
 - [ ] Batching
