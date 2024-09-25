@@ -1,0 +1,47 @@
+/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+epoch: 0
+Traceback (most recent call last):
+  File "/home/tazik/attention-is-all-you-need/scratch.py", line 248, in <module>
+    outputs = model(inputs)
+              ^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/attention-is-all-you-need/scratch.py", line 211, in forward
+    out = self.enc_dec(out)
+     ^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/attention-is-all-you-need/scratch.py", line 185, in forward
+    dec_out = dec(enc_out, dec_out)
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/attention-is-all-you-need/scratch.py", line 156, in forward
+    mha = self.M2(x_k=enc_out, x_v=sl1)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/mambaforge/envs/aj/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/attention-is-all-you-need/scratch.py", line 91, in forward
+    heads = torch.cat([self.attn(x_k, x_v) for _ in range(8)], dim=1)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/home/tazik/attention-is-all-you-need/scratch.py", line 78, in attn
+    mask = torch.ones(seq_len, seq_len).to(device)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
