@@ -1,6 +1,6 @@
 - [x] Fix masking
 - [x] Fix tokenizer
 - [x] Positional encodings
-- [ ] Loss per token
+- [x] Loss per token
 - [ ] Batching
-- [ ] `assert` every shape
+- [x] `assert` every shape
