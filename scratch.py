@@ -21,7 +21,7 @@ wandb.init(
 # ds = load_dataset("wmt/wmt14", "de-en", split='test')[:2]#'train')
 # training_data = ds['translation']
 
-training_data = load_dataset("wompzik/lambada", split="train[:100]")
+training_data = load_dataset("wompzik/lambada", split="train[:]")
 
 # os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
@@ -135,7 +135,7 @@ class Decoder(torch.nn.Module):
 
         sl1 = self.LN(x + mmha)
 
-        mha = self.M2(x_q=enc_out, x_k=sl1, attention_mask=attention_mask)
+        mha = self.M2(x_q=sl1, x_k=enc_out, attention_mask=attention_mask)
         mha = self.dropout(mha)
         
         sl2 = self.LN(sl1 + mha)
@@ -221,9 +221,10 @@ class Transformer(torch.nn.Module):
 
        assert out.shape == (1, seq_len, vocab_dim)
 
+       return out 
        # Softmax over dim=1, seq_len, for every position
-       softmax = torch.softmax(input=out, dim=1) 
-       return softmax
+       #softmax = torch.softmax(input=out, dim=1) 
+       #return softmax
 
 
 model = Transformer().to(device)

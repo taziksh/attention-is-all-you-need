@@ -2,5 +2,6 @@
 - [x] Fix tokenizer
 - [x] Positional encodings
 - [x] Loss per token
-- [ ] Batching
 - [x] `assert` every shape
+- [x] fix loss calculation, use logits not softmax
+- [ ] Batching
