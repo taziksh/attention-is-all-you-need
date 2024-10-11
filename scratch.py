@@ -204,7 +204,6 @@ class Transformer(torch.nn.Module):
     def forward(self, input_ids, attention_mask):
        #Nit: torch.nn.Sequential
 
-       #TODO: I'm not using attention_mask here 
        assert input_ids.shape == (1, seq_len)
 
        out = self.input_embed(input_ids)
