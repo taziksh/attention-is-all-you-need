@@ -6,6 +6,7 @@
 - [x] `assert` every shape
 - [x] fix loss calculation, use logits not softmax
 - [ ] fix learned weight dims
+- [ ] evaluate transformer outputs
 - [ ] LayerNorm
 - [ ] Batching
 - [ ] Tokenizer (train on Shakespeare)
