@@ -5,8 +5,9 @@
 - [x] Loss per token
 - [x] `assert` every shape
 - [x] fix loss calculation, use logits not softmax
-- [ ] Tokenizer (train on Shakespeare)
+- [ ] LayerNorm
 - [ ] Batching
+- [ ] Tokenizer (train on Shakespeare)
 - [ ] KV cache
 
 Loss graph for LAMBADA next word prediction      
