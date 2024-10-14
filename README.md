@@ -5,6 +5,7 @@
 - [x] Loss per token
 - [x] `assert` every shape
 - [x] fix loss calculation, use logits not softmax
+- [ ] fix learned weight dims
 - [ ] LayerNorm
 - [ ] Batching
 - [ ] Tokenizer (train on Shakespeare)
