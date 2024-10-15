@@ -1,9 +1,11 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer
+from fancy_einsum import einsum
 
 import torch
 import math
 import os
+import sys
 
 import wandb
 
@@ -17,14 +19,10 @@ wandb.init(
     }
 )
 
-#NOTE: they used train split, wiht ~3.5M example
-# ds = load_dataset("wmt/wmt14", "de-en", split='test')[:2]#'train')
-# training_data = ds['translation']
-
 training_data = load_dataset("wompzik/lambada", split="train[:]")
 
 # os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
-device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_default_dtype(torch.float32)
 
 num_layers = 6
@@ -53,29 +51,26 @@ class FFN(torch.nn.Module):
         return out
 
 class MHA(torch.nn.Module):
-    def __init__(self, h=8, has_mask=False):  
+    def __init__(self, n_heads=8, has_mask=False):  
         super().__init__()          
         
         self.has_mask = has_mask
-        self.d_k = d_model // h
-
-        self.d_v = self.d_k        
+        self.d_head = d_model // n_heads
         
-        self.scale = 1/math.sqrt(self.d_k)
+        self.scale = 1/math.sqrt(self.d_head)
 
         assert d_model == 512
-        assert self.d_k == 64
-        assert self.d_v == self.d_k
+        assert self.d_head == 64
 
-        self.W_Q = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(d_model, self.d_k))))
-        self.W_K = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(d_model, self.d_k))))
-        self.W_V = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(d_model, self.d_v))))
-        self.W_O = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(h*self.d_v, d_model))))
+        self.W_Q = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(d_model, n_heads, self.d_head))))
+        self.W_K = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(d_model, n_heads, self.d_head))))
+        self.W_V = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(d_model, n_heads, self.d_head))))
+        self.W_O = torch.nn.Parameter(torch.nn.init.xavier_uniform_(torch.zeros(size=(n_heads*self.d_head, d_model))))
                 
     def attn(self, x_q, x_k, attention_mask):
-        Q = torch.einsum('bcd,dk->bck', x_q, self.W_Q)
-        K = torch.einsum('bcd,dk->bck', x_k, self.W_K)
-        V = torch.einsum('bcd,dv->bcv', x_k, self.W_V)
+        Q = einsum('batch seq_len d_model, d_model n_heads d_head -> batch seq_len n_heads d_head', x_q, self.W_Q)
+        K = einsum('batch seq_len d_model, d_model n_heads d_head -> batch seq_len n_heads d_head', x_k, self.W_K)
+        V = einsum('batch seq_len d_model, d_model n_heads d_head -> batch seq_len n_heads d_head', x_k, self.W_V)
 
         causal_mask = torch.ones(1, seq_len, seq_len).to(device) 
         if self.has_mask:
@@ -85,11 +80,14 @@ class MHA(torch.nn.Module):
         causal_mask = causal_mask * attention_mask
         
         # softmax along dim=-1 of Q@K.T => seq_len
-        scores = self.scale*Q@K.transpose(-2,-1) # bcd,bdc -> bcc
-        scores = scores.masked_fill_(causal_mask == 0, -float('inf'))
-        sm = torch.softmax(scores, dim=-1)
-        head = sm @ V
+        attn_scores = self.scale * einsum('batch seq_len n_heads d_head, batch seq_len_2 n_heads d_head -> batch seq_len seq_len_2', Q, K) #Q@K.transpose(-2,-1) # bcd,bdc -> bcc
+        # bcnh, bcnh -> bcc
+        attn_scores = attn_scores.masked_fill_(causal_mask == 0, -float('inf'))
+        sm = torch.softmax(attn_scores, dim=-1)
+
+        head = einsum('batch seq_len seq_len_2, batch seq_len n_heads d_head -> batch seq_len d_head', sm, V)
         return head
+        # head = einsum('batch seq_len seq_len_2, batch seq_len n_heads d_head -> batch' sm, V)         # head = sm @ V
 
     def forward(self, x_q, x_k, attention_mask):
         assert x_q.shape == (1, seq_len, d_model)
@@ -204,7 +202,6 @@ class Transformer(torch.nn.Module):
     def forward(self, input_ids, attention_mask):
        #Nit: torch.nn.Sequential
 
-       #TODO: I'm not using attention_mask here 
        assert input_ids.shape == (1, seq_len)
 
        out = self.input_embed(input_ids)
@@ -222,6 +219,7 @@ class Transformer(torch.nn.Module):
        assert out.shape == (1, seq_len, vocab_dim)
 
        return out 
+    
        # Softmax over dim=1, seq_len, for every position
        #softmax = torch.softmax(input=out, dim=1) 
        #return softmax
@@ -261,3 +259,4 @@ for epoch in range(num_epochs):
         
     if epoch % 2 == 0:
         print(f"loss: {loss} @ epoch: {epoch}")
+        sys.stdout.flush()        
