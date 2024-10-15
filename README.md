@@ -5,8 +5,8 @@
 - [x] Loss per token
 - [x] `assert` every shape
 - [x] fix loss calculation, use logits not softmax
-- [ ] fix learned weight dims
-- [ ] evaluate transformer outputs
+- [x] fix learned weight dims
+- [ ] qualitatively evaluate generations
 - [ ] LayerNorm
 - [ ] Batching
 - [ ] Tokenizer (train on Shakespeare)

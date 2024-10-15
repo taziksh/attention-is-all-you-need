@@ -248,9 +248,9 @@ for epoch in range(num_epochs):
         input_tokens = tokenizer(sample['until_last'], truncation=True, padding='max_length', max_length=seq_len, return_tensors="pt").to(device)
         target_tokens = tokenizer(sample['last_word'], truncation=True, padding='max_length', max_length=seq_len, return_tensors="pt").to(device)
 
-        output_tokens = model(**input_tokens)
+        output_logits = model(**input_tokens)
 
-        loss = criterion(output_tokens.transpose(-2,-1), target_tokens['input_ids'])
+        loss = criterion(output_logits.transpose(-2,-1), target_tokens['input_ids'])
         losses.append(loss)
         wandb.log({"loss": loss})
 
@@ -258,5 +258,7 @@ for epoch in range(num_epochs):
         optim.step()
         
     if epoch % 2 == 0:
-        print(f"loss: {loss} @ epoch: {epoch}")
-        sys.stdout.flush()        
+        print(f"loss: {loss} @ epoch: {epoch}", flush=True)
+
+    if epoch % 10 == 0:
+        print(f"Output: {tokenizer.decode(output_logits[-1,-1].argmax())}")
