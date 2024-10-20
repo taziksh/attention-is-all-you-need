@@ -32,3 +32,5 @@ that also output weights?
 - Why do we have so many skip connections, especially connecting the
 input of an attention function to the output? Intuitively, what if we
 didn't?
+
+Solutions: https://chatgpt.com/share/671590d9-3268-800d-b9f6-f9802dc366d0
