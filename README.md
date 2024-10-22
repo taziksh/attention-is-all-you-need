@@ -6,10 +6,10 @@
 - [x] `assert` every shape
 - [x] fix loss calculation, use logits not softmax
 - [x] fix learned weight dims
-- [ ] qualitatively evaluate generations
+- [ ] Tokenizer (train on Shakespeare)
+- [ ] Qualitatively evaluate generations
 - [ ] LayerNorm
 - [ ] Batching
-- [ ] Tokenizer (train on Shakespeare)
 - [ ] KV cache
 
 Loss graph for LAMBADA next word prediction      
